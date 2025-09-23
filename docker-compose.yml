@@ -1,0 +1,19 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hse-devsec
+    image: hse.devsec:dev
+    env_file:
+    - ./.env
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    profiles: ["dev"]
+
+
+networks:
+  hse-devsec-network:
+    driver: bridge

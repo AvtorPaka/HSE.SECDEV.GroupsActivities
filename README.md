@@ -13,7 +13,7 @@ uvicorn app.main:app --reload
 
 ## Ритуал перед PR
 ```bash
-ruff --fix .
+ruff check --fix .
 black .
 isort .
 pytest -q
@@ -34,7 +34,7 @@ Badge добавится автоматически после загрузки 
 docker build -t secdev-app .
 docker run --rm -p 8000:8000 secdev-app
 # или
-docker compose up --build
+docker compose --profile dev up -d
 ```
 
 ## Эндпойнты
