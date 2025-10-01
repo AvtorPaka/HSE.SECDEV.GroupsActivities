@@ -1,53 +1,42 @@
-# SecDev Course Template
+# SecDev Groups Activities
 
-Стартовый шаблон для студенческого репозитория (HSE SecDev 2025).
+API менеджмента групп пользователей по активностям с session-based authN, authZ
+
+## Контейнеры
+
+- Контейнер c API - `studygroups-api`
+- Контейнер с PgSQL - `studygroups-db`
+
+Миграции накатываются вместе с `studygroups-api`, после доступности `studygroups-db` по health-check
+
+```bash
+docker compose up -d
+```
+
+## Endpoints
+
+Посмотреть актуальную спецификацию и описание endpoint-ов можно в
+
+**[Postman Workspace](https://www.postman.com/fluxconfig/hse-secdev-groupactivities)**
+
 
 ## Быстрый старт
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\Activate.ps1
+source .venv/bin/activate
 pip install -r requirements.txt -r requirements-dev.txt
-pre-commit install
-uvicorn app.main:app --reload
 ```
 
 ## Ритуал перед PR
 ```bash
-ruff check --fix .
-black .
-isort .
-pytest -q
+pytest tests/ -v
 pre-commit run --all-files
 ```
 
 ## Тесты
 ```bash
-pytest -q
+pytest tests/ -v
 ```
 
 ## CI
 В репозитории настроен workflow **CI** (GitHub Actions) — required check для `main`.
 Badge добавится автоматически после загрузки шаблона в GitHub.
-
-## Контейнеры
-```bash
-docker build -t secdev-app .
-docker run --rm -p 8000:8000 secdev-app
-# или
-docker compose --profile dev up -d
-```
-
-## Эндпойнты
-- `GET /health` → `{"status": "ok"}`
-- `POST /items?name=...` — демо-сущность
-- `GET /items/{id}`
-
-## Формат ошибок
-Все ошибки — JSON-обёртка:
-```json
-{
-  "error": {"code": "not_found", "message": "item not found"}
-}
-```
-
-См. также: `SECURITY.md`, `.pre-commit-config.yaml`, `.github/workflows/ci.yml`.

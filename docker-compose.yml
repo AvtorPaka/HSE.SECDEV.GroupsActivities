@@ -1,18 +1,52 @@
 services:
-  app:
+  studygroups_api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: hse-devsec
-    image: hse.devsec:dev
+    container_name: studygroups-api
+    image: hse.devsec.studygroups:${STUDYGROUPD_API_TAG}
+    restart: unless-stopped
+    depends_on:
+      studygroups_db:
+        condition: service_healthy
+        restart: true
     env_file:
-    - ./.env
-    ports:
-      - "8000:8000"
+      - ./.env
     environment:
       - PYTHONUNBUFFERED=1
-    profiles: ["dev"]
+    networks:
+      - hse-devsec-network
+    ports:
+      - ${STUDYGROUPD_API_PORT}:8000
 
+  studygroups_db:
+    image: postgres:latest
+    container_name: studygroups-db
+    restart: unless-stopped
+    shm_size: 128mb
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_DB: ${PG_DB}
+      POSTGRES_USER: ${PG_SYS_USER}
+      POSTGRES_PASSWORD: ${PG_SYS_PSWD}
+    volumes:
+      - hse-devsec-pg-data:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d
+    networks:
+      - hse-devsec-network
+    ports:
+      - ${PG_EXP_PORT}:5432
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${PG_SYS_USER}", "-d", "${PG_DB}"]
+      interval: 10s
+      retries: 3
+      start_period: 15s
+      timeout: 10s
+
+volumes:
+  hse-devsec-pg-data:
+    driver: local
 
 networks:
   hse-devsec-network:

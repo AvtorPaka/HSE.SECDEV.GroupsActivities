@@ -1,2 +1,10 @@
 fastapi==0.112.2
 uvicorn==0.30.5
+sqlalchemy==2.0.30
+alembic==1.13.2
+psycopg==3.1.18
+asyncpg==0.30.0
+greenlet==3.2.4
+python-dotenv==1.0.1
+bcrypt==5.0.0
+email-validator==2.3.0
