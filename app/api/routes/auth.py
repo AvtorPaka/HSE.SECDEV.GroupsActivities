@@ -41,6 +41,8 @@ async def user_login(
         value=set_cookie_model.session.id,
         expires=set_cookie_model.session.expiration_date,
         httponly=True,
+        # secure=True
+        # samesite="lax"
     )
 
     return UserLoginResponse(
@@ -67,6 +69,11 @@ async def user_logout(
     session_id = request.cookies.get(SESSION_COOKIE_KEY) or ""
 
     await auth_service.logout_user(session_id)
-    response.delete_cookie(key=SESSION_COOKIE_KEY, httponly=True)
+    response.delete_cookie(
+        key=SESSION_COOKIE_KEY,
+        httponly=True,
+        # secure=True,
+        # samesite="lax"
+    )
 
     return UserLogoutResponse()

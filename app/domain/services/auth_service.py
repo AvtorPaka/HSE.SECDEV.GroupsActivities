@@ -91,7 +91,7 @@ class AuthService:
                 )
 
             session_id = KeyGenerator.generate_composite_key()
-            expiration_date = datetime.now(timezone.utc) + timedelta(hours=12)
+            expiration_date = datetime.now(timezone.utc) + timedelta(hours=3)
 
             session_entity = UserSession(
                 id=session_id, user_id=user_entity.id, expiration_date=expiration_date
