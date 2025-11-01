@@ -5,3 +5,5 @@ black==24.8.0
 isort==5.13.2
 pre-commit==3.8.0
 debugpy==1.6.7
+pytest-asyncio==1.2.0
+anyio==4.11.0

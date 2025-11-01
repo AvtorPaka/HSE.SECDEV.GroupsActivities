@@ -16,8 +16,6 @@ services:
       - PYTHONUNBUFFERED=1
     networks:
       - hse-devsec-network
-    ports:
-      - ${STUDYGROUPD_API_PORT}:8000
 
   studygroups_db:
     image: postgres:latest
@@ -43,6 +41,17 @@ services:
       retries: 3
       start_period: 15s
       timeout: 10s
+
+  studygroups_api_gateway:
+    image: nginx:1.28-alpine
+    volumes:
+      - ./gateway/nginx.conf.template:/etc/nginx/templates/default.conf.template
+    environment:
+      - AUTH_API_URL=${SECDEV_GA_AUTH_URL}
+    ports:
+      - ${SD_AA_GATEWAY_PORT}:80
+    networks:
+      - hse-devsec-network
 
 volumes:
   hse-devsec-pg-data:
