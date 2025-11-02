@@ -6,6 +6,7 @@ API менеджмента групп пользователей по актив
 
 - Контейнер c API - `studygroups-api`
 - Контейнер с PgSQL - `studygroups-db`
+- Контейнер с Nginx api GW - `studygroups-api-gateway`
 
 Миграции накатываются вместе с `studygroups-api`, после доступности `studygroups-db` по health-check
 
