@@ -38,4 +38,4 @@
 ## Links
 - **NFR:** `NFR-04` (Маскирование PII в ошибках)
 - **Threat Model:** `F1`, `Risk R6` (Раскрытие информации о существовании пользователя)
-- **Тесты:** [e2e](https://github.com/hse-secdev-2025-fall/course-project-AvtorPaka/blob/main/tests/e2e/test_auth.py)  /  [unit](https://github.com/hse-secdev-2025-fall/course-project-AvtorPaka/blob/main/tests/unit/test_errors.py)
+- **Тесты:** [e2e](https://github.com/AvtorPaka/HSE.SECDEV.GroupsActivities/blob/main/tests/e2e/test_auth.py)  /  [unit](https://github.com/AvtorPaka/HSE.SECDEV.GroupsActivities/blob/main/tests/unit/test_errors_format.py)
