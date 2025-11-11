@@ -49,4 +49,4 @@
 - **NFR:** `NFR-02` (Защита от подбора учётных данных), `NFR-06` (Производительность аутентификации)
 - **Threat Model:** `F1` (Login Request), `Risk R1` (Блокировка сервиса из-за brute-force)
 - **BDD:** Feature: Защита от подбора учётных данных
-- **Реализация:** [nginx gateway](https://github.com/hse-secdev-2025-fall/course-project-AvtorPaka/blob/main/gateway/nginx.conf.template)
+- **Реализация:** [nginx gateway](https://github.com/AvtorPaka/HSE.SECDEV.GroupsActivities/blob/main/gateway/nginx.conf.template)

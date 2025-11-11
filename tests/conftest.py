@@ -1,8 +1,6 @@
-import asyncio
 import os
 import sys
 import uuid
-from asyncio import AbstractEventLoop
 from pathlib import Path
 from typing import AsyncGenerator, Generator
 
@@ -27,13 +25,6 @@ from app.domain.hasher.hasher import PasswordHasher  # noqa: E402
 from app.infrastructure.dal.configuration.postgres import DATABASE_APP_URL  # noqa: E402
 from app.infrastructure.dal.entities.models import User  # noqa: E402
 from app.main import app  # noqa: E402
-
-
-@pytest.fixture(scope="session")
-def event_loop() -> Generator[AbstractEventLoop, None, None]:
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
 
 
 @pytest_asyncio.fixture(scope="session")

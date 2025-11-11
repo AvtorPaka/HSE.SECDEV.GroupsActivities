@@ -1,13 +1,15 @@
 from typing import List, Optional
+from uuid import uuid4
 
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 
 class ApiErrorModel(BaseModel):
-    code: str
-    message: str
+    title: str
+    status: str
     details: Optional[List[str]] = None
+    correlation_id: str
 
 
 class ApiErrorResponse(BaseModel):
@@ -25,8 +27,12 @@ class ApiError:
 
 
 def create_error_response(api_error: ApiError) -> JSONResponse:
+    cid = str(uuid4())
     error_model = ApiErrorModel(
-        code=api_error.code, message=api_error.message, details=api_error.details
+        status=api_error.code,
+        title=api_error.message,
+        details=api_error.details,
+        correlation_id=cid,
     )
     return JSONResponse(
         status_code=api_error.status_code,
