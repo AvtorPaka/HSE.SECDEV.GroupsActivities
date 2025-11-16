@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  JUNIT_REPORT_BASE_PATH: junit-reports
+  REPORT_BASE_DIR: reports
   REGISTRY: docker.io
   IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}
 
@@ -62,23 +62,22 @@ jobs:
 
       - name: Unit tests
         run: |
-          JUNIT_REPORT_DIR="${{ env.JUNIT_REPORT_BASE_PATH }}/${{ runner.os }}/py${{ matrix.python-version }}"
-          mkdir -p "$JUNIT_REPORT_DIR"
-          pytest tests/unit/ -q --junitxml="$JUNIT_REPORT_DIR/junit.xml" --disable-warnings --cov=src --cov-report=xml
+          mkdir -p ${{ env.REPORT_BASE_DIR }}
+          pytest tests/unit/ -q --junitxml="${{ env.REPORT_BASE_DIR }}/junit.xml" --disable-warnings --cov=app --cov-report=xml:"${{ env.REPORT_BASE_DIR }}/coverage.xml"
 
       - name: Upload JUnit test report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: junit-report-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: ${{ env.JUNIT_REPORT_BASE_PATH }}/${{ runner.os }}/py${{ matrix.python-version }}/
+          path: ${{ env.REPORT_BASE_DIR }}/junit.xml
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: coverage-report-${{ matrix.os }}-py${{ matrix.python-version }}
-          path: coverage.xml
+          path: ${{ env.REPORT_BASE_DIR }}/coverage.xml
 
   publish-docker-image:
     name: "Publish Docker Image"
@@ -126,7 +125,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       # Эмуляция деплоя
-      - name: Mock Deploy to Staging
+      - name: Deploy to Staging
         run: |
-          echo "🚀 Mock deployment of image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.extract_version.outputs.version }} to staging environment..."
-          echo "✅ Deployment successful (emulated)."
+          echo "Deployment (mock) of image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.extract_version.outputs.version }} to staging environment..."
+          echo "Deployment successful (emulated)."
