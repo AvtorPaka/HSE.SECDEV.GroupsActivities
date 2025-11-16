@@ -1,5 +1,9 @@
 # SecDev Groups Activities
 
+![CI](https://github.com/AvtorPaka/HSE.SECDEV.GroupsActivities/actions/workflows/ci.yml/badge.svg)
+
+[Docker images registry](https://hub.docker.com/r/avtorpaka/hse.devsec.studygroups)
+
 API менеджмента групп пользователей по активностям с session-based authN, authZ
 
 ## Контейнеры
