@@ -1,40 +1,131 @@
 name: CI
 on:
   pull_request:
+    branches: [ "main" ]
   push:
     branches: [main]
+  release:
+    types: [ published ]
 permissions:
   contents: read
+
+env:
+  REPORT_BASE_DIR: reports
+  REGISTRY: docker.io
+  IMAGE_NAME: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.DOCKER_IMAGE_NAME }}
+
+
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
+  build-and-test:
+    name: Build & Test on Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
 
-      - uses: actions/setup-python@v5
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: ${{ matrix.python-version }}
           cache: "pip"
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: cache
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-${{ matrix.python-version }}-
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r requirements-dev.txt
 
-      - name: Lint & Format
+      - name: Lint
         run: |
           ruff check --output-format=github .
           black --check .
           isort --check-only .
 
-      - name: Tests
-        run: pytest tests/unit/ -q
+      - name: Unit tests
+        run: |
+          mkdir -p ${{ env.REPORT_BASE_DIR }}
+          pytest tests/unit/ -q --junitxml="${{ env.REPORT_BASE_DIR }}/junit.xml" --disable-warnings --cov=app --cov-report=xml:"${{ env.REPORT_BASE_DIR }}/coverage.xml"
 
-      - name: Pre-commit (all files)
-        run: pre-commit run --all-files
-        env:
-          SKIP: no-commit-to-branch
+      - name: Upload JUnit test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: junit-report-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: ${{ env.REPORT_BASE_DIR }}/junit.xml
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report-${{ matrix.os }}-py${{ matrix.python-version }}
+          path: ${{ env.REPORT_BASE_DIR }}/coverage.xml
+
+  publish-docker-image:
+    name: "Publish Docker Image"
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.event_name == 'release'
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          VERSION=${{ github.ref_name }}
+          VERSION=${VERSION#v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Login to Docker registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          platforms: linux/amd64, linux/arm64
+
+      - name: Build and publish image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64, linux/arm64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.extract_version.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Эмуляция деплоя
+      - name: Deploy to Staging
+        run: |
+          echo "Deployment (mock) of image ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.extract_version.outputs.version }} to staging environment..."
+          echo "Deployment successful (emulated)."
