@@ -1,8 +1,12 @@
 # SCA Summary
 
 **Date:** Wed Nov 26 21:41:56 UTC 2025
+
 **Tool:** Grype (using SBOM from Syft)
+
 **Status:** Clean Scan
+
+[Pipeline Launch](https://github.com/AvtorPaka/HSE.SECDEV.GroupsActivities/actions/runs/19718930867)
 
 ## Severity Counts
 
