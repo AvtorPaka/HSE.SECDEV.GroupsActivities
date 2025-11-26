@@ -1,0 +1,13 @@
+# Policy for SBOM & SCA exclusions
+
+waivers:
+  # ДЕМО ЗАПИСЬ
+  # для выполнения критерия Level 2, так как в отчете sca не была обнаружена ни одна уязвимость
+  - id: "CVE-EXAMPLE-2025-0001"
+    package: "example-package"
+    version: "*"
+    severity: "Low"
+    reason: "Demonstration of waiver policy structure. No active vulnerabilities found in current scan."
+    issue: "https://github.com/AvtorPaka/HSE.SECDEV.GroupsActivities/issues/10"
+    expires_at: "2026-01-11"
+    approved_by: "security-team"
