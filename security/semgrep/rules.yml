@@ -1,0 +1,22 @@
+rules:
+  - id: python-no-print-in-prod
+    languages: [python]
+    message: "Обнаружен вызов print(). В продакшн-коде следует использовать логгер (logging/structlog)."
+    severity: WARNING
+    patterns:
+      - pattern: print(...)
+    metadata:
+      category: best-practice
+      technology: [python]
+
+  - id: python-dangerous-exec-eval
+    languages: [python]
+    message: "Использование exec() или eval() крайне опасно и может привести к RCE."
+    severity: ERROR
+    patterns:
+      - pattern-either:
+          - pattern: eval(...)
+          - pattern: exec(...)
+    metadata:
+      category: security
+      cwe: "CWE-78: Improper Neutralization of Special Elements used in an OS Command"
