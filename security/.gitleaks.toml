@@ -1,0 +1,22 @@
+title = "Project P10 Gitleaks Config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Global allowlist for the project"
+
+# Игнорируем файлы отчетов и логов, чтобы не триггерить сканер на сами находки
+# Игонрируем conftest.py с мок данными для подключения к БД в e2e тестах
+paths = [
+    '''EVIDENCE/.*''',
+    '''reports/.*''',
+    '''test/.*'''
+    '''tests/.*'''
+    '''сonftest.py'''
+]
+
+# Игнорирование конкретных ложных срабатываний по Regex
+regexes = [
+    '''mock_token_.*'''
+]
